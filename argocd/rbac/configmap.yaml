@@ -1,0 +1,10 @@
+# app-deploy/argocd/rbac/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd
+data:
+  policy.csv: |
+    p, role:deployer, applications, *, */*, allow
+    g, dev-team, role:deployer
