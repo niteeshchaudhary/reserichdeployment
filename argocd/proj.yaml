@@ -1,0 +1,12 @@
+# reserichdeployment-project.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: reserichdeployment
+spec:
+  description: Deployment project for Reserich
+  sourceRepos:
+    - '*'  # or restrict to specific repo
+  destinations:
+    - namespace: '*'
+      server: '*'  # or restrict to your cluster
