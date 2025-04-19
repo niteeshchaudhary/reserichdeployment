@@ -31,7 +31,7 @@ spec:
       volumes:
       - name: media-volume
         persistentVolumeClaim:
-          claimName: media-pvc
+          claimName: media-data-pvc
 
 ---
 apiVersion: v1
