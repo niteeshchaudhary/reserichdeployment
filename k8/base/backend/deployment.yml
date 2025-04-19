@@ -9,7 +9,7 @@ metadata:
     argocd-image-updater.argoproj.io/backend.update-strategy: latest
     argocd-image-updater.argoproj.io/backend.allow-tags: regexp:^[0-9a-f]{7}$
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -28,7 +28,7 @@ spec:
                python manage.py collectstatic --noinput && \
                python manage.py seed_plans && \
                python manage.py create_admin && \
-               gunicorn reserish.wsgi:application --timeout 120 --workers 3 --bind 0.0.0.0:8000"
+               gunicorn reserish.wsgi:application --timeout 120 --workers 5 --bind 0.0.0.0:8000"
             ]
         ports:
         - containerPort: 8000
