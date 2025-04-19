@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: localhost:5100/backend:latest  # Will be updated by ArgoCD
+        image: localhost:5000/backend:latest  # Will be updated by ArgoCD
         ports:
         - containerPort: 8000
         env:
