@@ -19,6 +19,15 @@ spec:
       containers:
       - name: backend
         image: localhost:5000/backend:latest  # Will be updated by ArgoCD
+        command:
+            [
+              "sh", "-c",
+              "python manage.py migrate && \
+               python manage.py collectstatic --noinput && \
+               python manage.py seed_plans && \
+               python manage.py create_admin && \
+               gunicorn reserish.wsgi:application --bind 0.0.0.0:8000"
+            ]
         ports:
         - containerPort: 8000
         env:
@@ -54,3 +63,12 @@ spec:
           value: "backend.CustomUser"
         - name: DJANGO_SECRET_KEY
           value: "your-secret-key"
+        
+        volumeMounts:
+            - name: media-data
+              mountPath: /app/media
+              
+      volumes:
+        - name: media-data
+          persistentVolumeClaim:
+            claimName: media-data-pvc

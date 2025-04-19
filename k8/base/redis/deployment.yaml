@@ -1,19 +1,52 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: redis
 spec:
+  serviceName: "redis"
+  replicas: 2
+  selector:
+    matchLabels:
+      app: redis
   template:
+    metadata:
+      labels:
+        app: redis
     spec:
       containers:
-      - name: redis
-        image: redis:latest
-        ports:
-        - containerPort: 6379
-        volumeMounts:
-        - mountPath: /data
-          name: redis-data
-      volumes:
-      - name: redis-data
-        persistentVolumeClaim:
-          claimName: redis-pvc
+        - name: redis
+          image: redis:latest
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          command:
+            - redis-server
+            - "--appendonly"
+            - "yes" # Enable Append-Only File persistence
+            - "--appendfilename"
+            - "appendonly.aof"
+            - "--dir"
+            - "/data"
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: "standard"  # Ensure this matches your storage class
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  ports:
+    - port: 6379
+  clusterIP: None  # This is important for StatefulSet to access Redis by stable DNS
+  selector:
+    app: redis

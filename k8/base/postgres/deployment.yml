@@ -1,26 +1,51 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: postgres
 spec:
+  serviceName: "postgres"
+  replicas: 1  # You can scale this based on your requirements
+  selector:
+    matchLabels:
+      app: postgres
   template:
+    metadata:
+      labels:
+        app: postgres
     spec:
       containers:
-      - name: postgres
-        image: postgres:latest
-        env:
-          - name: POSTGRES_USER
-            value: postgres
-          - name: POSTGRES_PASSWORD
-            value: nkc
-          - name: POSTGRES_DB
-            value: reserish
-        ports:
-        - containerPort: 5432
-        volumeMounts:
-        - mountPath: /var/lib/postgresql/data
-          name: postgres-data
-      volumes:
-      - name: postgres-data
-        persistentVolumeClaim:
-          claimName: postgres-pvc
+        - name: postgres
+          image: postgres:13  # Or your preferred version
+          env:
+            - name: POSTGRES_USER
+              value: "youruser"
+            - name: POSTGRES_PASSWORD
+              value: "yourpassword"
+            - name: POSTGRES_DB
+              value: "yourdb"
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi  # Modify as per your requirements
+        storageClassName: "standard"  # Ensure this matches your storage class
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+  clusterIP: None  # StatefulSet uses stable DNS names, so we set ClusterIP to None
+  selector:
+    app: postgres
