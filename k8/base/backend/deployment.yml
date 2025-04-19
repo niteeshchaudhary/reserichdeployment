@@ -28,7 +28,7 @@ spec:
                python manage.py collectstatic --noinput && \
                python manage.py seed_plans && \
                python manage.py create_admin && \
-               gunicorn reserish.wsgi:application --bind 0.0.0.0:8000"
+               gunicorn reserish.wsgi:application --timeout 120 --workers 3 --bind 0.0.0.0:8000"
             ]
         ports:
         - containerPort: 8000
@@ -70,7 +70,7 @@ spec:
         - name: RAZORPAY_API_SECRET
           value: "8V30mMAFxdlffo96Mh7r2toR"
         - name: LATEX_SERVICE_URL
-          value: "http://latex-service:8001"
+          value: "http://latex:8001"
 
         volumeMounts:
             - name: media-data
