@@ -9,7 +9,7 @@ spec:
       repoURL: https://github.com/niteeshchaudhary/reserichdeployment.git
       revision: HEAD
       directories:
-      - path: overlays/*
+      - path: k8/overlays/dev
   template:
     metadata:
       name: '{{path.basename}}'

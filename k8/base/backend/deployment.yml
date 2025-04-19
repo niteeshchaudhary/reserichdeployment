@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: backend
   annotations:
-    argocd-image-updater.argoproj.io/image-list: backend=your-registry/backend
+    argocd-image-updater.argoproj.io/image-list: backend=localhost:5000/backend
     argocd-image-updater.argoproj.io/backend.update-strategy: latest
     argocd-image-updater.argoproj.io/backend.allow-tags: regexp:^[0-9a-f]{7}$
 spec:
@@ -18,6 +18,39 @@ spec:
     spec:
       containers:
       - name: backend
-        image: your-registry/backend:latest  # Will be updated by ArgoCD
+        image: localhost:5100/backend:latest  # Will be updated by ArgoCD
         ports:
         - containerPort: 8000
+        env:
+        - name: DB_NAME
+          value: "reserish"
+        - name: DB_USER
+          value: "postgres"
+        - name: DB_PASSWORD
+          value: "nkc"
+        - name: DB_HOST
+          value: "db"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: "reserish"
+        - name: DATABASE_URL
+          value: "postgres://postgres:nkc@postgres:5432/reserish"
+        - name: REDIS_URL
+          value: "redis://redis:6379/0"
+        - name: CELERY_BROKER_URL
+          value: "redis://redis:6379/0"
+        - name: CELERY_RESULT_BACKEND
+          value: "redis://redis:6379/0"
+        - name: DEBUG
+          value: "False"
+        - name: SECRET_KEY
+          value: "your-secret-key"
+        - name: ALLOWED_HOSTS
+          value: "nkc.buzz 127.0.0.1 localhost 13.234.19.252 13.232.122.71 66.179.211.82 hiresmarts.in reserishmain.nkc.buzz"
+        - name: DJANGO_CORS_ALLOW_ALL_ORIGINS
+          value: "True"
+        - name: USERMODEL
+          value: "backend.CustomUser"
+        - name: DJANGO_SECRET_KEY
+          value: "your-secret-key"

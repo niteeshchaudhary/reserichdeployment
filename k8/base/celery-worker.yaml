@@ -18,4 +18,5 @@ spec:
             - name: CELERY_BROKER_URL
               value: "redis://redis:6379/0"
             - name: DATABASE_URL
-              value: "postgres://myuser:mypassword@postgres:5432/mydb"
+              value: "postgres://postgres:nkc@postgres:5432/reserish"
+              

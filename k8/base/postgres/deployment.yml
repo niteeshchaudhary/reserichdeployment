@@ -7,6 +7,16 @@ spec:
     spec:
       containers:
       - name: postgres
+        image: postgres:latest
+        env:
+          - name: POSTGRES_USER
+            value: postgres
+          - name: POSTGRES_PASSWORD
+            value: nkc
+          - name: POSTGRES_DB
+            value: reserish
+        ports:
+        - containerPort: 5432
         volumeMounts:
         - mountPath: /var/lib/postgresql/data
           name: postgres-data

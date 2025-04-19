@@ -3,9 +3,9 @@ kind: Kustomization
 resources:
   - backend/deployment.yaml
   - celery-worker.yaml
-  - postgres/pv.yaml
-  - postgres/pvc.yaml
+  - postgres/postgres-pv.yaml
+  - postgres/postgres-pvc.yaml
   - postgres/deployment.yaml
-  - redis/pv.yaml
-  - redis/pvc.yaml
+  - redis/redis-pv.yaml
+  - redis/redis-pvc.yaml
   - redis/deployment.yaml

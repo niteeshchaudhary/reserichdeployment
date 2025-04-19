@@ -7,6 +7,9 @@ spec:
     spec:
       containers:
       - name: redis
+        image: redis:latest
+        ports:
+        - containerPort: 6379
         volumeMounts:
         - mountPath: /data
           name: redis-data
