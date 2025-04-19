@@ -1,13 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  clusterIP: None  # Headless service for stable network identity
+  ports:
+    - port: 6379
+      name: redis
+  selector:
+    app: redis
+
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: redis
 spec:
-  serviceName: "redis"
-  replicas: 2
   selector:
     matchLabels:
       app: redis
+  serviceName: redis
+  replicas: 2
   template:
     metadata:
       labels:
@@ -15,38 +30,19 @@ spec:
     spec:
       containers:
         - name: redis
-          image: redis:latest
+          image: redis:7.2-alpine
           ports:
             - containerPort: 6379
+              name: redis
           volumeMounts:
             - name: redis-data
               mountPath: /data
-          command:
-            - redis-server
-            - "--appendonly"
-            - "yes" # Enable Append-Only File persistence
-            - "--appendfilename"
-            - "appendonly.aof"
-            - "--dir"
-            - "/data"
+          args: ["--appendonly", "yes"]
   volumeClaimTemplates:
     - metadata:
         name: redis-data
       spec:
-        accessModes:
-          - ReadWriteOnce
+        accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 1Gi
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: redis
-spec:
-  ports:
-    - port: 6379
-  clusterIP: None  # This is important for StatefulSet to access Redis by stable DNS
-  selector:
-    app: redis
+            storage: 2Gi
