@@ -53,8 +53,6 @@ spec:
           value: "redis://redis:6379/0"
         - name: DEBUG
           value: "False"
-        - name: SECRET_KEY
-          value: "your-secret-key"
         - name: ALLOWED_HOSTS
           value: "nkc.buzz 127.0.0.1 localhost 13.234.19.252 13.232.122.71 66.179.211.82 hiresmarts.in reserishmain.nkc.buzz"
         - name: DJANGO_CORS_ALLOW_ALL_ORIGINS
@@ -67,7 +65,7 @@ spec:
         volumeMounts:
             - name: media-data
               mountPath: /app/media
-              
+
       volumes:
         - name: media-data
           persistentVolumeClaim:

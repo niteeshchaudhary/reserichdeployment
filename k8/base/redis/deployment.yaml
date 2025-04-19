@@ -38,7 +38,7 @@ spec:
         resources:
           requests:
             storage: 1Gi
-        storageClassName: "standard"  # Ensure this matches your storage class
+        storageClassName: "standard"  
 ---
 apiVersion: v1
 kind: Service

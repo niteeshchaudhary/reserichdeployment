@@ -17,8 +17,8 @@ jobs:
     
     - name: Build and Push Frontend
       run: |
-        docker build -t your-registry/frontend:$GITHUB_SHA -f frontend/Dockerfile frontend/
-        docker push your-registry/frontend:$GITHUB_SHA
-        echo "FRONTEND_IMAGE=your-registry/frontend:$GITHUB_SHA" >> $GITHUB_ENV
+        docker build -t localhost:5000/frontend:$GITHUB_SHA -f frontend/Dockerfile frontend/
+        docker push localhost:5000/frontend:$GITHUB_SHA
+        echo "FRONTEND_IMAGE=localhost:5000/frontend:$GITHUB_SHA" >> $GITHUB_ENV
 
     # Similar jobs for backend and celery

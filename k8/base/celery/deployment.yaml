@@ -21,12 +21,12 @@ spec:
       containers:
         - name: celery
           image: localhost:5000/celery:latest  # Will be updated by ArgoCD
-          command: ["celery", "-A", "your_project_name", "worker", "--loglevel=info"]
+          command: ["celery", "-A", "reserish", "worker", "--loglevel=info"]
           env:
             - name: CELERY_BROKER_URL
               value: redis://redis:6379/0
             - name: DJANGO_SETTINGS_MODULE
-              value: your_project_name.settings
+              value: reserish.settings
           volumeMounts:
             - name: shared-volume
               mountPath: /app/shared

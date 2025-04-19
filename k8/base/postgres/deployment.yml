@@ -4,7 +4,7 @@ metadata:
   name: postgres
 spec:
   serviceName: "postgres"
-  replicas: 1  # You can scale this based on your requirements
+  replicas: 2  
   selector:
     matchLabels:
       app: postgres
@@ -15,14 +15,14 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:13  # Or your preferred version
+          image: postgres:latest
           env:
             - name: POSTGRES_USER
-              value: "youruser"
+              value: "reserish"
             - name: POSTGRES_PASSWORD
-              value: "yourpassword"
+              value: "nkc"
             - name: POSTGRES_DB
-              value: "yourdb"
+              value: "reserish"
           ports:
             - containerPort: 5432
           volumeMounts:
@@ -36,8 +36,8 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: 10Gi  # Modify as per your requirements
-        storageClassName: "standard"  # Ensure this matches your storage class
+            storage: 10Gi 
+        storageClassName: "standard" 
 ---
 apiVersion: v1
 kind: Service
