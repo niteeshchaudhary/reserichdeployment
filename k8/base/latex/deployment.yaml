@@ -1,14 +1,15 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: latex
+  labels:
+    app: latex
   annotations:
-    argocd-image-updater.argoproj.io/image-list: latex=localhost:5000/latex
+   argocd-image-updater.argoproj.io/image-list: latex=localhost:5000/latex
     argocd-image-updater.argoproj.io/latex.update-strategy: latest
     argocd-image-updater.argoproj.io/latex.allow-tags: regexp:^[0-9a-f]{7}$
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: latex
@@ -18,16 +19,30 @@ spec:
         app: latex
     spec:
       containers:
-        - name: latex
-          image: localhost:5000/latex
-          command: ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8001"]
-          workingDir: /app
-          ports:
-            - containerPort: 8001
-          volumeMounts:
-            - name: media-data
-              mountPath: /app/shared
+      - name: latex
+        image: localhost:5000/latex  # Replace with actual image name if not using build
+        command: [ "sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8001" ]
+        ports:
+        - containerPort: 8001
+        volumeMounts:
+        - name: media-volume
+          mountPath: /app/shared
+        workingDir: /app
       volumes:
-        - name: media-data
-          persistentVolumeClaim:
-            claimName: media-data-pvc
+      - name: media-volume
+        persistentVolumeClaim:
+          claimName: media-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: latex-service
+spec:
+  selector:
+    app: latex
+  ports:
+  - protocol: TCP
+    port: 8001
+    targetPort: 8001
+  type: ClusterIP

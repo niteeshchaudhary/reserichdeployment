@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
+  labels:
+    app: backend
   annotations:
     argocd-image-updater.argoproj.io/image-list: backend=localhost:5000/backend
     argocd-image-updater.argoproj.io/backend.update-strategy: latest
@@ -31,8 +33,6 @@ spec:
         ports:
         - containerPort: 8000
         env:
-        - name: DB_NAME
-          value: "reserish"
         - name: DB_USER
           value: "postgres"
         - name: DB_PASSWORD
@@ -61,7 +61,17 @@ spec:
           value: "backend.CustomUser"
         - name: DJANGO_SECRET_KEY
           value: "your-secret-key"
-        
+        - name: EMAIL_HOST_USER
+          value: "niteeshkamalchaudhary00@gmail.com"
+        - name: EMAIL_HOST_PASSWORD
+          value: "ncoo avad bklm howk"
+        - name: RAZORPAY_API_KEY
+          value: "rzp_test_83EoTqYaRuuSA7"
+        - name: RAZORPAY_API_SECRET
+          value: "8V30mMAFxdlffo96Mh7r2toR"
+        - name: LATEX_SERVICE_URL
+          value: "http://latex-service:8001"
+
         volumeMounts:
             - name: media-data
               mountPath: /app/media
@@ -70,3 +80,18 @@ spec:
         - name: media-data
           persistentVolumeClaim:
             claimName: media-data-pvc
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector:
+    app: backend
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP
