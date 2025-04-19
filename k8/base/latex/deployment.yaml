@@ -37,7 +37,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: latex-service
+  name: latex
 spec:
   selector:
     app: latex
