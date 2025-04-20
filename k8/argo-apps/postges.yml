@@ -2,13 +2,13 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: postgresapp
-  # namespace: argocd
+  namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/niteeshchaudhary/reserichdeployment.git
     targetRevision: main
-    path: ./k8/base/postgres
+    path: ../k8/base/postgres
   destination:
     server: https://kubernetes.default.svc
     namespace: default
