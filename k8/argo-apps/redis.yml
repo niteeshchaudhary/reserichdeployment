@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/niteeshchaudhary/reserichdeployment.git
     targetRevision: main
-    path: /k8/base/redis
+    path: k8/base/redis
   destination:
     server: https://kubernetes.default.svc
     namespace: default
