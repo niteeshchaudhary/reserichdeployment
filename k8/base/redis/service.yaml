@@ -1,10 +1,11 @@
 ---
+# Headless Service for Redis
 apiVersion: v1
 kind: Service
 metadata:
   name: redis
 spec:
-  clusterIP: None  # Required for StatefulSet DNS
+  clusterIP: None
   ports:
     - port: 6379
       name: redis

@@ -1,3 +1,5 @@
+---
+# Redis StatefulSet with Sentinel
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -14,10 +16,18 @@ spec:
         app: redis
     spec:
       initContainers:
-        - name: wait-for-dns
+        - name: config-loader
           image: busybox:1.28
-          command: ['sh', '-c', 'until nslookup redis-0.redis; do echo waiting for DNS; sleep 2; done']
-          
+          command: ['sh', '-c', 'cp /tmp/redis.conf /etc/redis/redis.conf && cp /tmp/sentinel.conf /etc/redis/sentinel.conf']
+          volumeMounts:
+            - name: redis-config
+              mountPath: /tmp/redis.conf
+              subPath: redis.conf
+            - name: sentinel-config
+              mountPath: /tmp/sentinel.conf
+              subPath: sentinel.conf
+            - name: config
+              mountPath: /etc/redis
       containers:
         - name: redis
           image: redis:7.2-alpine
@@ -29,18 +39,14 @@ spec:
           volumeMounts:
             - name: redis-data
               mountPath: /data
-            - name: redis-config
-              mountPath: /etc/redis/redis.conf
-              subPath: redis.conf
-            - name: sentinel-config
-              mountPath: /etc/redis/sentinel.conf
-              subPath: sentinel.conf
+            - name: config
+              mountPath: /etc/redis
           command: ["/bin/sh", "-c"]
           args:
             - |
-              # Start Redis in the background
-              redis-server /etc/redis/redis.conf --daemonize yes
-              # Start Sentinel in the foreground (required for Kubernetes health checks)
+              # Start Redis server
+              redis-server /etc/redis/redis.conf &
+              # Start Sentinel
               redis-sentinel /etc/redis/sentinel.conf
           resources:
             requests:
@@ -49,6 +55,16 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "1"
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
       volumes:
         - name: redis-config
           configMap:
@@ -56,6 +72,8 @@ spec:
         - name: sentinel-config
           configMap:
             name: sentinel-config
+        - name: config
+          emptyDir: {}
   volumeClaimTemplates:
     - metadata:
         name: redis-data

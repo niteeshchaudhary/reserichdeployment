@@ -1,4 +1,19 @@
 ---
+# ConfigMap for Redis configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+data:
+  redis.conf: |
+    bind 0.0.0.0
+    port 6379
+    appendonly yes
+    cluster-enabled no
+    protected-mode no
+    dir /data
+---
+# ConfigMap for Sentinel configuration
 apiVersion: v1
 kind: ConfigMap
 metadata:
