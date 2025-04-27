@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
         - name: mongo-rs-init
-          image: mongo:6.0
+          image: mongo:latest
           command:
             - bash
             - -c
