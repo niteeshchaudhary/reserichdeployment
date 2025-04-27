@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: redis
 spec:
-  clusterIP: None  # Makes it headless
+  clusterIP: None  # Required for StatefulSet DNS
   ports:
     - port: 6379
       name: redis
