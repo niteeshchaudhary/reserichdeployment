@@ -1,8 +1,8 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: argo-exec-role
+  name: argocd-server-exec-role
 rules:
   - apiGroups: [""]
-    resources: ["pods", "pods/log", "pods/exec"]
+    resources: ["pods/exec", "pods", "pods/log"]
     verbs: ["get", "list", "watch", "create"]

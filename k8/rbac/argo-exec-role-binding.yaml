@@ -1,12 +1,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: argo-exec-role-binding
+  name: argocd-server-exec-binding
 subjects:
-  - kind: ServiceAccount
-    name: argo-server  # or 'argo' if you're not sure
-    namespace: argo    # or the namespace you installed Argo in
+- kind: ServiceAccount
+  name: argocd-server
+  namespace: argocd
 roleRef:
   kind: ClusterRole
-  name: argo-exec-role
+  name: argocd-server-exec-role
   apiGroup: rbac.authorization.k8s.io
