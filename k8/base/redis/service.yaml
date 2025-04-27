@@ -1,5 +1,5 @@
 ---
-# Headless Service for Redis
+# Headless Service for DNS resolution
 apiVersion: v1
 kind: Service
 metadata:
@@ -13,3 +13,20 @@ spec:
       name: sentinel
   selector:
     app: redis
+---
+# ConfigMap for Sentinel
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentinel-config
+data:
+  sentinel.conf: |
+    port 26379
+    sentinel resolve-hostnames yes
+    sentinel announce-hostnames yes
+    sentinel monitor mymaster redis-0.redis.default.svc.cluster.local 6379 2
+    sentinel down-after-milliseconds mymaster 5000
+    sentinel failover-timeout mymaster 10000
+    sentinel parallel-syncs mymaster 1
+    bind 0.0.0.0
+    protected-mode no

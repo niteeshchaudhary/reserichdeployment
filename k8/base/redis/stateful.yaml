@@ -1,5 +1,5 @@
 ---
-# Redis StatefulSet with Sentinel
+# StatefulSet
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -15,10 +15,11 @@ spec:
       labels:
         app: redis
     spec:
+      dnsPolicy: ClusterFirst
       initContainers:
         - name: config-loader
           image: busybox:1.28
-          command: ['sh', '-c', 'cp /tmp/redis.conf /etc/redis/redis.conf && cp /tmp/sentinel.conf /etc/redis/sentinel.conf']
+          command: ['sh', '-c', 'cp /tmp/redis.conf /etc/redis/ && cp /tmp/sentinel.conf /etc/redis/']
           volumeMounts:
             - name: redis-config
               mountPath: /tmp/redis.conf
@@ -31,6 +32,11 @@ spec:
       containers:
         - name: redis
           image: redis:7.2-alpine
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
           ports:
             - containerPort: 6379
               name: redis
@@ -44,27 +50,16 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              # Start Redis server
+              # Start Redis
               redis-server /etc/redis/redis.conf &
-              # Start Sentinel
+              # Wait for Redis to be ready
+              while ! redis-cli ping; do sleep 1; done
+              # Start Sentinel with full DNS name
               redis-sentinel /etc/redis/sentinel.conf
-          resources:
-            requests:
-              memory: "512Mi"
-              cpu: "500m"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
-          livenessProbe:
-            exec:
-              command: ["redis-cli", "ping"]
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            exec:
-              command: ["redis-cli", "ping"]
-            initialDelaySeconds: 5
-            periodSeconds: 10
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "redis-cli shutdown"]
       volumes:
         - name: redis-config
           configMap:
