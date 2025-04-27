@@ -11,3 +11,5 @@ spec:
       name: sentinel
   selector:
     app: redis
+
+    
