@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: patroni
-          image: kokdemir/patroni:latest
+          image: flant/spilo:latest
           env:
             - name: POSTGRES_USER
               value: "postgres"
