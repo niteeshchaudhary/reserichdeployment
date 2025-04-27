@@ -7,13 +7,15 @@ spec:
     spec:
       containers:
         - name: mongo-rs-init
-          image: mongo:latest
+          image: mongo:latest  # Make sure this is the latest MongoDB image
           command:
             - bash
             - -c
             - |
+              # Wait for MongoDB pods to be up
               sleep 20
-              mongo --host mongo-0.mongo:27017 <<EOF
+              # Use mongosh instead of mongo shell
+              mongosh --host mongo-0.mongo:27017 <<EOF
               rs.initiate({
                 _id: "rs0",
                 members: [
