@@ -13,6 +13,11 @@ spec:
       labels:
         app: redis
     spec:
+      initContainers:
+        - name: wait-for-dns
+          image: busybox:1.28
+          command: ['sh', '-c', 'until nslookup redis-0.redis; do echo waiting for DNS; sleep 2; done']
+          
       containers:
         - name: redis
           image: redis:7.2-alpine
