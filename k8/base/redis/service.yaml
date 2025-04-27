@@ -1,5 +1,3 @@
----
-# Headless Service for DNS resolution
 apiVersion: v1
 kind: Service
 metadata:
