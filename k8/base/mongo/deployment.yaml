@@ -37,7 +37,8 @@ spec:
           volumeMounts:
             - name: mongo-data
               mountPath: /data
-          args: ["--appendonly", "yes"]
+          command: ["mongod"]
+          args: ["--dbpath", "/data/db", "--bind_ip_all"]
   volumeClaimTemplates:
     - metadata:
         name: mongo-data
