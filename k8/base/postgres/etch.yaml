@@ -1,10 +1,11 @@
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: etcd
 spec:
   serviceName: "etcd"
-  replicas: 3  # etcd cluster should have an odd number of nodes (3 in this case)
+  replicas: 3
   selector:
     matchLabels:
       app: etcd
@@ -15,7 +16,7 @@ spec:
     spec:
       containers:
         - name: etcd
-          image: quay.io/coreos/etcd:latest
+          image: ghcr.io/etcd-io/etcd:v3.5.7  # Updated to new etcd image
           command:
             - /usr/local/bin/etcd
             - --name=$(POD_NAME)
