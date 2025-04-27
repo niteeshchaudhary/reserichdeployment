@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-rs-init
+spec:
+  template:
+    spec:
+      containers:
+        - name: mongo-rs-init
+          image: mongo:6.0
+          command:
+            - bash
+            - -c
+            - |
+              sleep 20
+              mongo --host mongo-0.mongo:27017 <<EOF
+              rs.initiate({
+                _id: "rs0",
+                members: [
+                  { _id: 0, host: "mongo-0.mongo:27017" },
+                  { _id: 1, host: "mongo-1.mongo:27017" },
+                  { _id: 2, host: "mongo-arbiter.mongo:27017", arbiterOnly: true }
+                ]
+              })
+              EOF
+      restartPolicy: Never
+  backoffLimit: 4

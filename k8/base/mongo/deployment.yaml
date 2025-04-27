@@ -1,54 +1,21 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: mongo
+  name: mongo-arbiter
 spec:
-  serviceName: mongo
-  replicas: 3  # <-- 2 data nodes + 1 arbiter
+  replicas: 1
   selector:
     matchLabels:
-      app: mongo
+      app: mongo-arbiter
   template:
     metadata:
       labels:
-        app: mongo
+        app: mongo-arbiter
     spec:
       containers:
-        - name: mongo
+        - name: mongo-arbiter
           image: mongo:6.0
-          command:
-            - bash
-            - -c
-            - |
-              if [ ! -f /data/db/.init-done ]; then
-                mongod --replSet rs0 --bind_ip_all & 
-                sleep 5
-                mongo --eval '
-                  rs.initiate({
-                    _id: "rs0",
-                    members: [
-                      { _id: 0, host: "mongo-0.mongo:27017" },
-                      { _id: 1, host: "mongo-1.mongo:27017" },
-                      { _id: 2, host: "mongo-2.mongo:27017", arbiterOnly: true }
-                    ]
-                  })
-                '
-                touch /data/db/.init-done
-                killall mongod
-                sleep 2
-              fi
-              exec mongod --replSet rs0 --bind_ip_all
+          command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
           ports:
             - containerPort: 27017
-          volumeMounts:
-            - name: mongo-persistent-storage
-              mountPath: /data/db
       terminationGracePeriodSeconds: 10
-  volumeClaimTemplates:
-    - metadata:
-        name: mongo-persistent-storage
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        resources:
-          requests:
-            storage: 5Gi
