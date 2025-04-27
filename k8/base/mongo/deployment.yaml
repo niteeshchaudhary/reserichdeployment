@@ -1,43 +1,48 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Service
 metadata:
   name: mongo
   labels:
     app: mongo
 spec:
-  replicas: 2
+  clusterIP: None  # Headless service for stable network identity
+  ports:
+    - port: 27017
+      name: mongo
+  selector:
+    app: mongo
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+spec:
   selector:
     matchLabels:
       app: mongo
+  serviceName: mongo
+  replicas: 2
   template:
     metadata:
       labels:
         app: mongo
     spec:
       containers:
-      - name: mongo
-        image: mongo  
-        ports:
-        - containerPort: 8001
-        volumeMounts:
-        - name: mongo-volume
-          mountPath: /app/mydb
-        workingDir: /app
-      volumes:
-      - name: mongo-volume
-        persistentVolumeClaim:
-          claimName: log-data-pvc
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongo
-spec:
-  selector:
-    app: mongo
-  ports:
-  - protocol: TCP
-    port: 27017
-    targetPort: 27017
-  type: ClusterIP
+        - name: mongo
+          image: mongo:latest
+          ports:
+            - containerPort: 27017
+              name: mongo
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /data
+          args: ["--appendonly", "yes"]
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
