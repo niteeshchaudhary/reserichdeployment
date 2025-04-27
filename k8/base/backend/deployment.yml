@@ -71,6 +71,10 @@ spec:
           value: "8V30mMAFxdlffo96Mh7r2toR"
         - name: LATEX_SERVICE_URL
           value: "http://latex:8001"
+        - name: MONGO_URI
+          value: "mongodb://mongo:27017"
+        - name: MONGO_DB
+          value: reserish_logs
 
         volumeMounts:
             - name: media-data

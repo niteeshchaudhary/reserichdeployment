@@ -20,7 +20,7 @@ spec:
                 members: [
                   { _id: 0, host: "mongo-0.mongo:27017" },
                   { _id: 1, host: "mongo-1.mongo:27017" },
-                  { _id: 2, host: "mongo-arbiter.mongo:27017", arbiterOnly: true }
+                  { _id: 2, host: "mongo-arbiter:27017", arbiterOnly: true }
                 ]
               })
               ' | mongosh --host mongo-0.mongo:27017

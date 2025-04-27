@@ -27,6 +27,10 @@ spec:
               value: redis://redis:6379/0
             - name: DJANGO_SETTINGS_MODULE
               value: reserish.settings
+            - name: MONGO_URI
+              value: "mongodb://mongo:27017"
+            - name: MONGO_DB
+              value: reserish_logs
           volumeMounts:
             - name: shared-volume
               mountPath: /app/shared
