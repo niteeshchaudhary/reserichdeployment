@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+  clusterIP: None   # <- very important (makes it headless)
+  selector:
+    app: mongo
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-arbiter
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+  selector:
+    app: mongo-arbiter
+  clusterIP: None   # make it headless as well
