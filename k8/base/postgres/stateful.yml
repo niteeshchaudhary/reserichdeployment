@@ -18,40 +18,35 @@ spec:
         - name: patroni
           image: flant/spilo:latest
           env:
-            - name: POSTGRES_USER
-              value: "postgres"
-            - name: POSTGRES_PASSWORD
+            - name: SCOPE
+              value: "postgres_cluster"
+            - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
                   key: POSTGRES_PASSWORD
-            - name: POSTGRES_DB
+            - name: PGUSER
+              value: "postgres"
+            - name: PGDATABASE
               value: "reserish"
-            - name: PATRONI_SCOPE
-              value: "postgres_cluster"
-            - name: PATRONI_RESTAPI_PASSWORD
+            - name: PATRONI_SUPERUSER_USERNAME
+              value: "postgres"
+            - name: PATRONI_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: PATRONI_REPLICATION_USERNAME
+              value: "replicator"
+            - name: PATRONI_REPLICATION_PASSWORD
+              value: "replication-password"
+            - name: PATRONI_ADMIN_USERNAME
+              value: "patroni"
+            - name: PATRONI_ADMIN_PASSWORD
               value: "restapi-password"
-            - name: PATRONI_ETCD_HOST
-              value: "etcd-0.etcd.default.svc.cluster.local"
           ports:
             - containerPort: 5432
-            - containerPort: 8008  # For Patroni REST API
+            - containerPort: 8008
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
-            - name: patroni-config
-              mountPath: /etc/patroni
-              readOnly: true
-      volumes:
-        - name: patroni-config
-          configMap:
-            name: patroni-config
-  volumeClaimTemplates:
-    - metadata:
-        name: postgres-data
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 4Gi
