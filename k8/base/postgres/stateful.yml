@@ -39,7 +39,7 @@ spec:
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
-            - name: patroni-config
+            - name: patroni-config  # This is where the ConfigMap will be mounted
               mountPath: /etc/patroni
               readOnly: true
   volumeClaimTemplates:
@@ -54,4 +54,4 @@ spec:
   volumes:
     - name: patroni-config
       configMap:
-        name: patroni-config
+        name: patroni-config 
