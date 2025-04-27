@@ -7,15 +7,14 @@ spec:
     spec:
       containers:
         - name: mongo-rs-init
-          image: mongo:latest  # Make sure this is the latest MongoDB image
+          image: mongo:latest
           command:
             - bash
             - -c
             - |
-              # Wait for MongoDB pods to be up
+              # Wait for MongoDB pods to be ready
               sleep 20
-              # Use mongosh instead of mongo shell
-              mongosh --host mongo-0.mongo:27017 <<EOF
+              echo '
               rs.initiate({
                 _id: "rs0",
                 members: [
@@ -24,6 +23,7 @@ spec:
                   { _id: 2, host: "mongo-arbiter.mongo:27017", arbiterOnly: true }
                 ]
               })
-              EOF
+              ' | mongosh --host mongo-0.mongo:27017
       restartPolicy: Never
   backoffLimit: 4
+
