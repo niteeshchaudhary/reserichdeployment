@@ -1,79 +1,51 @@
----
-# StatefulSet
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: redis
+  name: redis-cluster
+  namespace: redis
 spec:
-  serviceName: redis
-  replicas: 1
+  serviceName: redis-cluster
+  replicas: 3
   selector:
     matchLabels:
-      app: redis
+      app: redis-cluster
   template:
     metadata:
       labels:
-        app: redis
+        app: redis-cluster
     spec:
-      dnsPolicy: ClusterFirst
-      initContainers:
-        - name: config-loader
-          image: busybox:1.28
-          command: ['sh', '-c', 'cp /tmp/redis.conf /etc/redis/ && cp /tmp/sentinel.conf /etc/redis/']
-          volumeMounts:
-            - name: redis-config
-              mountPath: /tmp/redis.conf
-              subPath: redis.conf
-            - name: sentinel-config
-              mountPath: /tmp/sentinel.conf
-              subPath: sentinel.conf
-            - name: config
-              mountPath: /etc/redis
       containers:
-        - name: redis
-          image: redis:7.2-alpine
-          env:
-            - name: POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-          ports:
-            - containerPort: 6379
-              name: redis
-            - containerPort: 26379
-              name: sentinel
-          volumeMounts:
-            - name: redis-data
-              mountPath: /data
-            - name: config
-              mountPath: /etc/redis
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              # Start Redis
-              redis-server /etc/redis/redis.conf &
-              # Wait for Redis to be ready
-              while ! redis-cli ping; do sleep 1; done
-              # Start Sentinel with full DNS name
-              redis-sentinel /etc/redis/sentinel.conf
-          lifecycle:
-            preStop:
-              exec:
-                command: ["/bin/sh", "-c", "redis-cli shutdown"]
+      - name: redis
+        image: redis:alpine
+        ports:
+        - containerPort: 6379
+          name: client
+        - containerPort: 16379
+          name: gossip
+        command: ["/conf/update-node.sh", "redis-server", "/conf/redis.conf"]
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        volumeMounts:
+        - name: conf
+          mountPath: /conf
+          readOnly: false
+        - name: data
+          mountPath: /data
+          readOnly: false
       volumes:
-        - name: redis-config
-          configMap:
-            name: redis-config
-        - name: sentinel-config
-          configMap:
-            name: sentinel-config
-        - name: config
-          emptyDir: {}
+      - name: conf
+        configMap:
+          name: redis-cluster
+          defaultMode: 0755
   volumeClaimTemplates:
-    - metadata:
-        name: redis-data
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 2Gi
+  - metadata:
+      name: data
+    spec:
+      storageClassName: longhorn
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
