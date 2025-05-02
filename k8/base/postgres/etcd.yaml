@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: etcd
-          image: quay.io/coreos/etcd:latest
+          image: k8sre/etcd:v3.5.7
           env:
             - name: ETCD_DATA_DIR
               value: /etcd-data
