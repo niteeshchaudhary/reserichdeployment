@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  serviceName: "db"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: patroni
+          image: flant/spilo:latest
+          ports:
+            - containerPort: 5432
+            - containerPort: 8008
+          env:
+            # Cluster identity
+            - name: SCOPE
+              value: "reserish-cluster"  # Same as PATRONI_SCOPE
+            - name: PATRONI_SCOPE
+              value: "reserish-cluster"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+
+            # PostgreSQL superuser credentials
+            - name: PGUSER_SUPERUSER
+              value: "postgres"
+            - name: PGPASSWORD_SUPERUSER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+
+            # Patroni PostgreSQL credentials
+            - name: PATRONI_POSTGRESQL_USERNAME
+              value: "postgres"
+            - name: PATRONI_POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: PATRONI_POSTGRESQL_DATABASE
+              value: "reserish"
+
+            # Patroni REST API
+            - name: PATRONI_RESTAPI_PASSWORD
+              value: "restapi-password"
+            - name: APIPORT
+              value: "8008"
+            - name: RESTAPI_CONNECT_ADDRESS
+              value: "$(POD_NAME).postgres.default.svc.cluster.local:8008"
+
+            # Etcd
+            - name: ETCD_HOST
+              value: "etcd-0.etcd.default.svc.cluster.local"
+
+          volumeMounts:
+            - name: pgdata
+              mountPath: /home/postgres/pgdata
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
