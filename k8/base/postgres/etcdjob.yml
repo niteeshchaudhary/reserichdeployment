@@ -11,6 +11,6 @@ spec:
         image: bitnami/etcd:latest
         command: ["/bin/sh", "-c"]
         args:
-        - etcdctl --endpoints=http://etcd-0.etcd.etcd-cluster.svc.cluster.local:2379 put /message Hello;
-          etcdctl --endpoints=http://etcd-0.etcd.etcd-cluster.svc.cluster.local:2379 get /message
+        - etcdctl --endpoints=http://etcd-0.etcd.default.svc.cluster.local:2379 put /message Hello;
+          etcdctl --endpoints=http://etcd-0.etcd.default.svc.cluster.local:2379 get /message
       restartPolicy: Never
