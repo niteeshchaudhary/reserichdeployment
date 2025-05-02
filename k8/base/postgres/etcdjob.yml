@@ -3,7 +3,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: etcd-client-test
-  namespace: etcd-cluster
 spec:
   template:
     spec:
