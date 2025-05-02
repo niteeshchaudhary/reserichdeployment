@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-reserish-db
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: init-db
+        image: postgres:14
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            echo "Checking if DB exists..."
+            if psql -h postgres-0.postgres.default.svc.cluster.local -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'reserish'" | grep -q 1; then
+              echo "Database 'reserish' already exists."
+            else
+              echo "Creating database 'reserish'..."
+              createdb -h postgres-0.postgres.default.svc.cluster.local -U postgres reserish
+            fi
