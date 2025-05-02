@@ -18,21 +18,21 @@ spec:
         - name: patroni
           image: flant/spilo:latest
           env:
-            - name: POSTGRES_USER
-              value: "postgres"
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_PASSWORD
-            - name: POSTGRES_DB
-              value: "reserish"
             - name: PATRONI_SCOPE
               value: "postgres_cluster"
             - name: PATRONI_RESTAPI_PASSWORD
               value: "restapi-password"
             - name: PATRONI_ETCD_HOST
               value: "etcd-0.etcd.default.svc.cluster.local"
+            - name: PATRONI_POSTGRESQL_USERNAME
+              value: "postgres"
+            - name: PATRONI_POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: PATRONI_POSTGRESQL_DATABASE
+              value: "reserish""
           ports:
             - containerPort: 5432
             - containerPort: 8008  # For Patroni REST API
