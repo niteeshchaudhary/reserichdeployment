@@ -11,13 +11,20 @@ data:
     
     # ETCD Configuration
     etcd:
-      host: etcd-0.etcd.default.svc.cluster.local:2379  # Specify your etcd service and port
+      host: etcd-0.etcd.default.svc.cluster.local:2379,etcd-1.etcd.default.svc.cluster.local:2379,etcd-2.etcd.default.svc.cluster.local:2379
+      # Ensure SSL is disabled
+      ssl:
+        enabled: false
+
+
 
     # PostgreSQL Settings
     postgresql:
       listen: 0.0.0.0:5432
       connect_address: {{ pod_ip }}:5432
       data_dir: /home/postgres/pgdata
+      parameters:
+        ssl: "off"
       use_pg_rewind: true
       unix_socket_directories: /var/run/postgresql
       authentication:

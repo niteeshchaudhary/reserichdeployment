@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: etcd
-          image: k8sre/etcd:v3.5.7 # Updated to new etcd image
+          image: k8sre/etcd:v3.5.7
           command:
             - /usr/local/bin/etcd
             - --name=$(POD_NAME)

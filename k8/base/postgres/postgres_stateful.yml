@@ -60,7 +60,10 @@ spec:
 
             # Etcd
             - name: ETCD_HOST
-              value: "etcd-0.etcd.default.svc.cluster.local"
+              value: "etcd-0.etcd.default.svc.cluster.local:2379,etcd-1.etcd.default.svc.cluster.local:2379,etcd-2.etcd.default.svc.cluster.local:2379"
+
+            - name: PATRONI_SSL_MODE
+              value: "disable"
 
           volumeMounts:
             - name: pgdata
