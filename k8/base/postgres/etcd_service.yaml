@@ -8,6 +8,7 @@ spec:
   ports:
   - port: 2379
     name: client
+    nodePort: 23079
   - port: 2380
     name: peer
   selector:
