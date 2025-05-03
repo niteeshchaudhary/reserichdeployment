@@ -62,7 +62,7 @@ spec:
             # - name: PATRONI_ETCD_HOSTS
             #   value: etcd-0.etcd.default.svc.cluster.local:2379
             - name: ETCD_HOSTS
-              value: '"etcd-0.etcd.default.svc.cluster.local:2379,etcd-1.etcd.default.svc.cluster.local:2379,etcd-2.etcd.default.svc.cluster.local:2379"''
+              value: '"etcd-0.etcd.default.svc.cluster.local:2379,etcd-1.etcd.default.svc.cluster.local:2379,etcd-2.etcd.default.svc.cluster.local:2379"'
 
             - name: PATRONI_SSL_MODE
               value: "disable"
