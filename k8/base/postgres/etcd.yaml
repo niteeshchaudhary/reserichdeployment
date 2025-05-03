@@ -1,3 +1,4 @@
+# etcd-statefulset.yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -16,26 +17,32 @@ spec:
       containers:
       - name: etcd
         image: bitnami/etcd:latest
-        command:
-          - /opt/bitnami/etcd/bin/etcd
-          - "--name=$(HOSTNAME)"
-          - "--data-dir=/bitnami/etcd"
-          - "--advertise-client-urls=http://$(HOSTNAME).etcd.default.svc.cluster.local:2379"
-          - "--listen-client-urls=http://0.0.0.0:2379"
-          - "--initial-advertise-peer-urls=http://$(HOSTNAME).etcd.default.svc.cluster.local:2380"
-          - "--listen-peer-urls=http://0.0.0.0:2380"
-          - "--initial-cluster=etcd-0=http://etcd-0.etcd.default.svc.cluster.local:2380,etcd-1=http://etcd-1.etcd.default.svc.cluster.local:2380,etcd-2=http://etcd-2.etcd.default.svc.cluster.local:2380"
-          - "--initial-cluster-token=etcd-cluster"
-          - "--initial-cluster-state=new"
-          - "--enable-v2=true"
-          - "--logger=zap"
-          - "--log-outputs=stdout"
-          - "--log-level=debug"
         ports:
         - containerPort: 2379
           name: client
         - containerPort: 2380
           name: peer
+        env:
+        - name: ALLOW_NONE_AUTHENTICATION
+          value: "yes"
+        - name: ETCD_ADVERTISE_CLIENT_URLS
+          value: "http://etcd-0.etcd.default.svc.cluster.local:2379"
+        - name: ETCD_LISTEN_CLIENT_URLS
+          value: "http://0.0.0.0:2379"
+        - name: ETCD_LISTEN_PEER_URLS
+          value: "http://0.0.0.0:2380"
+        - name: ETCD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ETCD_INITIAL_CLUSTER
+          value: "etcd-0=http://etcd-0.etcd.default.svc.cluster.local:2380,etcd-1=http://etcd-1.etcd.default.svc.cluster.local:2380,etcd-2=http://etcd-2.etcd.default.svc.cluster.local:2380"
+        - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+          value: "http://$(ETCD_NAME).etcd.default.svc.cluster.local:2380"
+        - name: ETCD_INITIAL_CLUSTER_TOKEN
+          value: "etcd-cluster"
+        - name: ETCD_ENABLE_V2
+          value: "true"
         volumeMounts:
         - name: etcd-data
           mountPath: /bitnami/etcd
