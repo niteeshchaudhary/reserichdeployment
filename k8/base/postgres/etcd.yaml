@@ -17,6 +17,9 @@ spec:
       containers:
       - name: etcd
         image: bitnami/etcd:latest
+        command:
+          - /opt/bitnami/etcd/bin/etcd
+          - "--enable-v2=true"
         ports:
         - containerPort: 2379
           name: client
@@ -41,8 +44,6 @@ spec:
           value: "http://$(ETCD_NAME).etcd.default.svc.cluster.local:2380"
         - name: ETCD_INITIAL_CLUSTER_TOKEN
           value: "etcd-cluster"
-        - name: ETCD_ENABLE_V2
-          value: "true"
         volumeMounts:
         - name: etcd-data
           mountPath: /bitnami/etcd
