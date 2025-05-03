@@ -16,6 +16,11 @@ spec:
       containers:
         - name: etcd
           image: k8sre/etcd:v3.5.7 # Updated to new etcd image
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           command:
             - /usr/local/bin/etcd
             - --name=$(POD_NAME)
