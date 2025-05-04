@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-cluster-init
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: redis-init
+        image: redis:alpine
+        command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for Redis pods..."
+          for i in 0 1 2; do
+            while ! redis-cli -h session-redis-$i.session-redis.default.svc.cluster.local ping; do
+              echo "Waiting for session-redis-$i..."
+              sleep 2
+            done
+          done
+
+          echo "Creating cluster..."
+          yes yes | redis-cli --cluster create \
+            session-redis-0.session-redis.default.svc.cluster.local:6379 \
+            session-redis-1.session-redis.default.svc.cluster.local:6379 \
+            session-redis-2.session-redis.default.svc.cluster.local:6379 \
+            --cluster-replicas 0

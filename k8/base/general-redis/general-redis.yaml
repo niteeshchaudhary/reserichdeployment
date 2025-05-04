@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: general-redis
+  labels:
+    app: general-redis
+spec:
+  serviceName: "general-redis"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: general-redis
+  template:
+    metadata:
+      labels:
+        app: general-redis
+    spec:
+      containers:
+      - name: general-redis
+        image: redis:latest
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: general-redis-data
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: general-redis-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: general-redis
+  labels:
+    app: general-redis
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  clusterIP: None
+  selector:
+    app: general-redis
