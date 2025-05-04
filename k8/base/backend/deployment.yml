@@ -32,57 +32,11 @@ spec:
             ]
         ports:
         - containerPort: 8000
-        env:
-        - name: POSTGRES_HOST
-          value: db
-        - name: DB_USER
-          value: "postgres"
-        - name: DB_PASSWORD
-          value: "nkc"
-        - name: DB_HOST
-          value: "db"
-        - name: DB_PORT
-          value: "5432"
-        - name: DB_NAME
-          value: "reserish"
-        - name: DATABASE_URL
-          value: "postgres://postgres:nkc@postgres:5432/reserish"
-        - name: REDIS_CLUSTER
-          value: 'True'
-        - name: REDIS_SESSION_URL
-          value: "redis://session-redis:6379"
-        - name: CELERY_BROKER_URL
-          value: "redis://general-redis:6379"
-        - name: CELERY_RESULT_BACKEND
-          value: "redis://general-redis:6379"
-        - name: DEBUG
-          value: "False"
-        - name: CSRF_TRUSTED_ORIGINS
-          value: 'True'
-        - name: CSRF_TRUSTED_ORIGINS
-          value: "https://nkc.buzz/ https://hiresmarts.in/ https://reserishmain.nkc.buzz https://kreserishmain.nkc.buzz"
-        - name: DJANGO_ALLOWED_HOSTS
-          value: "nkc.buzz 127.0.0.1 localhost 13.234.19.252 13.232.122.71 66.179.211.82 hiresmarts.in reserishmain.nkc.buzz kreserishmain.nkc.buzz"
-        - name: DJANGO_CORS_ALLOW_ALL_ORIGINS
-          value: "True"
-        - name: USERMODEL
-          value: "backend.CustomUser"
-        - name: DJANGO_SECRET_KEY
-          value: "your-secret-key"
-        - name: EMAIL_HOST_USER
-          value: "niteeshkamalchaudhary00@gmail.com"
-        - name: EMAIL_HOST_PASSWORD
-          value: "ncoo avad bklm howk"
-        - name: RAZORPAY_API_KEY
-          value: "rzp_test_83EoTqYaRuuSA7"
-        - name: RAZORPAY_API_SECRET
-          value: "8V30mMAFxdlffo96Mh7r2toR"
-        - name: LATEX_SERVICE_URL
-          value: "http://latex:8001"
-        - name: MONGO_URI
-          value: "mongodb://mongo:27017"
-        - name: MONGO_DB
-          value: reserish_logs
+        envFrom:
+        - configMapRef:
+            name: app-config
+        - secretRef:
+            name: app-secret
 
         volumeMounts:
             - name: media-data
