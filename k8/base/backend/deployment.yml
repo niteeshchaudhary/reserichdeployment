@@ -46,11 +46,11 @@ spec:
         - name: DATABASE_URL
           value: "postgres://postgres:nkc@postgres:5432/reserish"
         - name: REDIS_URL
-          value: "redis://redis:6379/0"
+          value: "redis://session-redis:6379"
         - name: CELERY_BROKER_URL
-          value: "redis://redis:6379/0"
+          value: "redis://session-redis:6379"
         - name: CELERY_RESULT_BACKEND
-          value: "redis://redis:6379/0"
+          value: "redis://session-redis:6379"
         - name: DEBUG
           value: "False"
         - name: ALLOWED_HOSTS
