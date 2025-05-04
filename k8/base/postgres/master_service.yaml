@@ -1,0 +1,7 @@
+kind: Service
+metadata:
+  name: postgres-master
+spec:
+  selector:
+    cluster-name: postgres-cluster
+    role: master

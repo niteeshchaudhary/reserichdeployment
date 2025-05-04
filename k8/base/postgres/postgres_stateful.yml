@@ -21,6 +21,8 @@ spec:
             - containerPort: 5432
             - containerPort: 8008
           env:
+            - name: DCS_ENABLE_KUBERNETES_API
+              value: "true"
             - name: KUBERNETES_ROLE_LABEL
               value: "role"  # You can customize this
             - name: KUBERNETES_SCOPE_LABEL
