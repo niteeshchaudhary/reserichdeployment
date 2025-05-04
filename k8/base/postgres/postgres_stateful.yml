@@ -13,6 +13,7 @@ spec:
       labels:
         app: postgres
     spec:
+      serviceAccountName: patroni  # Use the ServiceAccount created above
       containers:
         - name: patroni
           image: flant/spilo:latest
