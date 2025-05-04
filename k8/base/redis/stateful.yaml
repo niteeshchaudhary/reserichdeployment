@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: redis-cluster
+  name: redis
 spec:
-  serviceName: redis-cluster
+  serviceName: redis
   replicas: 3
   selector:
     matchLabels:
-      app: redis-cluster
+      app: redis
   template:
     metadata:
       labels:
-        app: redis-cluster
+        app: redis
     spec:
       containers:
       - name: redis
@@ -37,7 +37,7 @@ spec:
       volumes:
       - name: conf
         configMap:
-          name: redis-cluster
+          name: redis
           defaultMode: 0755
   volumeClaimTemplates:
   - metadata:
