@@ -12,6 +12,7 @@ spec:
     metadata:
       labels:
         app: postgres
+        cluster-name: postgres-cluster
     spec:
       serviceAccountName: patroni  # Use the ServiceAccount created above
       containers:
