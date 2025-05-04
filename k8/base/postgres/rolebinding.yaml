@@ -5,6 +5,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: patroni
+    namespace: default
 roleRef:
   kind: ClusterRole
   name: patroni-cluster
