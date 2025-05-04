@@ -21,6 +21,15 @@ spec:
             done
           done
 
+          echo "Checking if cluster already initialized..."
+          INFO=$(redis-cli -h session-redis-0.session-redis.default.svc.cluster.local cluster info | grep cluster_state)
+          echo "Cluster state: $INFO"
+
+          if echo "$INFO" | grep -q "ok"; then
+            echo "Cluster already initialized. Skipping creation."
+            exit 0
+          fi
+
           echo "Creating cluster..."
           yes yes | redis-cli --cluster create \
             session-redis-0.session-redis.default.svc.cluster.local:6379 \
