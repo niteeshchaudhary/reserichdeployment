@@ -5,7 +5,7 @@ metadata:
   namespace: default
 data:
   patroni.yml: |
-    scope: reserish-cluster
+    scope: postgres-cluster
     namespace: /db/
     name: postgres-0  # Pod name (will be updated automatically)
     
