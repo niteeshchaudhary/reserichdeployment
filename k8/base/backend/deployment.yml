@@ -55,7 +55,7 @@ spec:
           value: "redis://general-redis:6379"
         - name: DEBUG
           value: "False"
-        - name: ALLOWED_HOSTS
+        - name: DJANGO_ALLOWED_HOSTS
           value: "nkc.buzz 127.0.0.1 localhost 13.234.19.252 13.232.122.71 66.179.211.82 hiresmarts.in reserishmain.nkc.buzz kreserishmain.nkc.buzz"
         - name: DJANGO_CORS_ALLOW_ALL_ORIGINS
           value: "True"
