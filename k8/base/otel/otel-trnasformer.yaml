@@ -68,3 +68,4 @@ spec:
           volumeMounts:
             - name: otel-storage
               mountPath: /otel-data
+
