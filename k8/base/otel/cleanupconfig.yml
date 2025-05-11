@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cleanup-script
+  namespace: otel
+data:
+  cleanup.sh: |
+    #!/bin/bash
+    set -e
+
+    DEPLOYMENT=otel-collectortransform-standalone
+    NAMESPACE=otel
+
+    echo "Scaling down $DEPLOYMENT..."
+    kubectl scale deployment $DEPLOYMENT -n $NAMESPACE --replicas=0
+
+    echo "Waiting for pods to terminate..."
+    kubectl wait --for=delete pod -l app=$DEPLOYMENT -n $NAMESPACE --timeout=60s
+
+    echo "Cleaning up PVC data..."
+    rm -rf /data/*
+
+    echo "Scaling up $DEPLOYMENT..."
+    kubectl scale deployment $DEPLOYMENT -n $NAMESPACE --replicas=1
+
+    echo "Done."

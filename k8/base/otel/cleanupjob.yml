@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pvc-cleanup-job
+  namespace: otel
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      serviceAccountName: cleanup-job-sa
+      restartPolicy: Never
+      containers:
+        - name: cleanup
+          image: bitnami/kubectl:latest
+          command: ["/bin/bash", "/scripts/cleanup.sh"]
+          volumeMounts:
+            - name: script
+              mountPath: /scripts
+            - name: pvc-data
+              mountPath: /data
+      volumes:
+        - name: script
+          configMap:
+            name: cleanup-script
+            defaultMode: 0777
+        - name: pvc-data
+          persistentVolumeClaim:
+            claimName: <your-pvc-name>  # <-- replace this
