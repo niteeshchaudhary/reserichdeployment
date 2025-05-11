@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: otel-collectortransform-standalone
@@ -12,11 +12,11 @@ spec:
       app: otel-collectortransform-standalone
   template:
     metadata:
-      name: otel-collectortransform-standalone
-      namespace: otel
       labels:
         app: otel-collectortransform-standalone
     spec:
+      nodeSelector:
+        kubernetes.io/os: linux
       volumes:
         - name: otel-storage
           persistentVolumeClaim:
@@ -28,8 +28,7 @@ spec:
             - sh
             - -c
             - >
-              mkdir -p /data/traces; mkdir -p /data/completed; mkdir -p
-              /data/pending; mkdir -p /data/failed;
+              mkdir -p /data/traces && mkdir -p /data/completed && mkdir -p /data/pending && mkdir -p /data/failed
           volumeMounts:
             - name: otel-storage
               mountPath: /data
