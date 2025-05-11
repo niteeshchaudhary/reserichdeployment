@@ -25,4 +25,4 @@ spec:
             defaultMode: 0777
         - name: pvc-data
           persistentVolumeClaim:
-            claimName: <your-pvc-name>  # <-- replace this
+            claimName: otel-nfs-pvc  # <-- replace this

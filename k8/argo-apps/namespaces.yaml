@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: namespaces
+  namespace: default
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/niteeshchaudhary/reserichdeployment.git'    # ← Your Git repo URL here
+    targetRevision: HEAD
+    path: k8/base/namespaces              # ← pointing to your folder!
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: argocd
+  syncPolicy:
+    automated: {}
