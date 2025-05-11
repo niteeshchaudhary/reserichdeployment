@@ -15,12 +15,13 @@ spec:
       labels:
         app: otel-collectortransform-standalone
     spec:
-      nodeSelector:
-        kubernetes.io/os: linux
       volumes:
         - name: otel-storage
           persistentVolumeClaim:
             claimName: otel-nfs-pvc
+        - name: otel-config
+          configMap:
+            name: otel-collector-config
       initContainers:
         - name: mkdir
           image: busybox:1.35.0
@@ -28,7 +29,7 @@ spec:
             - sh
             - -c
             - >
-              mkdir -p /data/traces && mkdir -p /data/completed && mkdir -p /data/pending && mkdir -p /data/failed
+              mkdir -p /data/traces /data/completed /data/pending /data/failed
           volumeMounts:
             - name: otel-storage
               mountPath: /data
@@ -37,35 +38,13 @@ spec:
           image: otel/opentelemetry-collector-contrib:0.72.0
           args:
             - "--config=/etc/otel-collector-config/config.yaml"
-          env:
-            - name: ElkBulkBatchSize
-              value: "1000"
-            - name: ElkDataStreamName
-              value: "your-data-stream"
-            - name: ElkIndexName
-              value: "your-index"
-            - name: ElkMaxConnectionBackoffs
-              value: "3"
-            - name: ElkMaxRetries
-              value: "5"
-            - name: ElkUseDataStream
-              value: "true"
-            - name: ExposePprof
-              value: "false"
-            - name: LowBatchBackoffCount
-              value: "3"
-            - name: LowBatchBackoffDuration
-              value: "5s"
-            - name: StoragePath
-              value: "/data"
-            - name: TraceCompletionDelaySeconds
-              value: "5"
-            - name: UploadRawSpans
-              value: "true"
           ports:
-            - containerPort: 3333
+            - containerPort: 4317
+              protocol: TCP
+            - containerPort: 4318
               protocol: TCP
           volumeMounts:
             - name: otel-storage
               mountPath: /otel-data
-
+            - name: otel-config
+              mountPath: /etc/otel-collector-config
