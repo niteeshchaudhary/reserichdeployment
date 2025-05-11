@@ -35,7 +35,10 @@ spec:
               mountPath: /data
       containers:
         - name: opentelemetry-collector
-          image: o9platform.azurecr.io/quarterly/o9.psr-transform:202411147
+          image: otel/opentelemetry-collector-contrib:0.72.0
+          command:
+            - "/otelcontribcol"
+            - "--config=/etc/otel-collector-config/config.yaml"
           env:
             - name: ElkBulkBatchSize
               value: "1000"
@@ -61,25 +64,8 @@ spec:
               value: "5"
             - name: UploadRawSpans
               value: "true"
-            # Uncomment and configure if secrets are needed
-            # - name: ElkEndpoint
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: your-secret
-            #       key: endpoint
-            # - name: ElkUsername
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: your-secret
-            #       key: username
-            # - name: ElkPassword
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: your-secret
-            #       key: password
           ports:
             - containerPort: 3333
-              name: grpc
               protocol: TCP
           volumeMounts:
             - name: otel-storage
