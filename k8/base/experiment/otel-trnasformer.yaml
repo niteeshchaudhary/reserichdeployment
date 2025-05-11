@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: otel-collectortransform-standalone
+  namespace: o9cor-azrgq10029
+spec:
+  volumes:
+    - name: otel-storage
+      persistentVolumeClaim:
+        claimName: otel-nfs-pvc
+  initContainers:
+    - name: mkdir
+      image: o9platform.azurecr.io/busybox:latest
+      command:
+        - sh
+        - -c
+        - >
+          mkdir -p /data/traces; mkdir -p /data/completed; mkdir -p
+          /data/pending; mkdir -p /data/failed;
+      volumeMounts:
+        - name: transform-data
+          mountPath: /data
+  containers:
+    - name: opentelemetry-collector
+      image: o9platform.azurecr.io/quarterly/o9.psr-transform:202411147
+      env:
+        - name: ElkBulkBatchSize
+          value: "1000"
+        - name: ElkDataStreamName
+          value: "your-data-stream"
+        - name: ElkIndexName
+          value: "your-index"
+        - name: ElkMaxConnectionBackoffs
+          value: "3"
+        - name: ElkMaxRetries
+          value: "5"
+        - name: ElkUseDataStream
+          value: "true"
+        - name: ExposePprof
+          value: "false"
+        - name: LowBatchBackoffCount
+          value: "3"
+        - name: LowBatchBackoffDuration
+          value: "5s"
+        - name: StoragePath
+          value: "/data"
+        - name: TraceCompletionDelaySeconds
+          value: "5"
+        - name: UploadRawSpans
+          value: "true"
+        # Uncomment and configure if secrets are needed
+        # - name: ElkEndpoint
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: your-secret
+        #       key: endpoint
+        # - name: ElkUsername
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: your-secret
+        #       key: username
+        # - name: ElkPassword
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: your-secret
+        #       key: password
+      ports:
+        - containerPort: 3333
+          name: grpc
+          protocol: TCP
+      volumeMounts:
+        - name: otel-storage
+          mountPath: /otel-data
