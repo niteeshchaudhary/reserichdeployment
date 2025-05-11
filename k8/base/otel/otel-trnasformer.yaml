@@ -35,8 +35,7 @@ spec:
       containers:
         - name: opentelemetry-collector
           image: otel/opentelemetry-collector-contrib:0.72.0
-          command:
-            - "/otelcontribcol"
+          args:
             - "--config=/etc/otel-collector-config/config.yaml"
           env:
             - name: ElkBulkBatchSize
