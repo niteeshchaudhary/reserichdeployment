@@ -23,7 +23,7 @@ spec:
             claimName: otel-nfs-pvc
       initContainers:
         - name: mkdir
-          image: o9platform.azurecr.io/busybox:latest
+          image: busybox:1.35.0
           command:
             - sh
             - -c
