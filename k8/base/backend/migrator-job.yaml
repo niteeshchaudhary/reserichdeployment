@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: data-migrator
+spec:
+  template:
+    spec:
+      containers:
+      - name: migrator
+        image: localhost:5000/migrator:latest # Replace with your actual image
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "Starting data migration...";
+            cp -r /app/* /mnt/data/;
+            echo "Migration completed.";
+        volumeMounts:
+        - name: media-data
+          mountPath: /mnt/data/
+      restartPolicy: Never
+      volumes:
+      - name: media-data
+        persistentVolumeClaim:
+            claimName: media-data-pvc
+  backoffLimit: 2
