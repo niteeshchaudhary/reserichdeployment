@@ -13,6 +13,9 @@ data:
 
     processors:
       batch:
+      logging:
+        log_level: debug
+        output_file: "/otel-collector/logs/otel-logs.txt"
 
     exporters:
       logging:
