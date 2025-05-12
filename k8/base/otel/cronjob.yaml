@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pod-monitor-cronjob
+  namespace: otel
+spec:
+  schedule: "*/2 * * * *"  # Runs every 5 minutes, adjust as necessary
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: cleanup-job-sa
+          containers:
+            - name: pod-monitor
+              image: bitnami/kubectl:latest
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  POD_NAME=$(kubectl get pods -n otel -l app=otel-collectortransform-standalone -o jsonpath='{.items[0].metadata.name}')
+                  POD_STATUS=$(kubectl get pod $POD_NAME -n otel -o jsonpath='{.status.phase}')
+                  
+                  # Check if pod is running or not
+                  if [[ "$POD_STATUS" != "Running" ]]; then
+                    echo "Otel pod is not running. Skipping log check."
+                    exit 0
+                  fi
+
+                  # Check if logs contain EOF
+                  LOG_CONTENTS=$(kubectl logs $POD_NAME -n otel)
+                  if echo "$LOG_CONTENTS" | grep -q "EOF"; then
+                    echo "EOF found in pod logs. Triggering cleanup job..."
+                    kubectl create job cleanup-job-trigger --from=cronjob/otel/cleanup-job -n otel
+                  else
+                    echo "EOF not found in pod logs."
+                  fi
+              restartPolicy: OnFailure
