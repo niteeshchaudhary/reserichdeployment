@@ -43,8 +43,8 @@ data:
       -p '{"spec": {"syncPolicy": {"automated": {}}}}'
 
     echo "Cleanup complete."
-    kubectl wait --for=condition=complete job/${JOB_NAME}-manual -n $NAMESPACE --timeout=180s
+    kubectl wait --for=condition=complete job/${JOB_NAME} -n $NAMESPACE --timeout=180s
 
     # Delete the job
     echo "Deleting completed job..."
-    kubectl delete job/${JOB_NAME}-manual -n $NAMESPACE
+    kubectl delete job/${JOB_NAME} -n $NAMESPACE
