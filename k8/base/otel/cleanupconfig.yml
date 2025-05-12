@@ -13,6 +13,7 @@ data:
     DEPLOYMENT=otel-collectortransform-standalone
     ARGO_APP=otel
     ARGO_NS=argocd
+    JOB_NAME=cleanup-job-trigger
 
     echo "Fetching original replica count..."
     ORIGINAL_REPLICAS=$(kubectl get deployment $DEPLOYMENT -n $NAMESPACE -o jsonpath='{.spec.replicas}')
@@ -42,3 +43,8 @@ data:
       -p '{"spec": {"syncPolicy": {"automated": {}}}}'
 
     echo "Cleanup complete."
+    kubectl wait --for=condition=complete job/${JOB_NAME}-manual -n $NAMESPACE --timeout=180s
+
+    # Delete the job
+    echo "Deleting completed job..."
+    kubectl delete job/${JOB_NAME}-manual -n $NAMESPACE
