@@ -4,7 +4,7 @@ metadata:
   name: pod-monitor-cronjob
   namespace: otel
 spec:
-  schedule: "*/2 * * * *"  # Runs every 5 minutes, adjust as necessary
+  schedule: "*/5 * * * *"  # Runs every 5 minutes, adjust as necessary
   jobTemplate:
     spec:
       template:
@@ -34,4 +34,4 @@ spec:
                   else
                     echo "EOF not found in pod logs."
                   fi
-              restartPolicy: OnFailure
+          restartPolicy: OnFailure
