@@ -4,7 +4,8 @@ metadata:
   name: cleanup-job
   namespace: otel
 spec:
-  schedule: "@never"
+  schedule: "0 0 1 * *"  # Run monthly at midnight on the 1st
+  suspend: true          # Prevent automatic runs
   jobTemplate:
     spec:
       backoffLimit: 1
