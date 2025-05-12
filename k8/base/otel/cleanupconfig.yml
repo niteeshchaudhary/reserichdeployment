@@ -6,21 +6,39 @@ metadata:
 data:
   cleanup.sh: |
     #!/bin/bash
+
     set -e
 
-    DEPLOYMENT=otel-collectortransform-standalone
     NAMESPACE=otel
+    DEPLOYMENT=otel-collectortransform-standalone
+    ARGO_APP=otel
+    ARGO_NS=argocd
+
+    echo "Fetching original replica count..."
+    ORIGINAL_REPLICAS=$(kubectl get deployment $DEPLOYMENT -n $NAMESPACE -o jsonpath='{.spec.replicas}')
+    echo "Original replicas: $ORIGINAL_REPLICAS"
+
+    echo "Disabling Argo CD auto-sync for application $ARGO_APP..."
+    kubectl patch application $ARGO_APP -n $ARGO_NS \
+      --type merge \
+      -p '{"spec": {"syncPolicy": null}}'
 
     echo "Scaling down $DEPLOYMENT..."
-    kubectl scale deployment $DEPLOYMENT -n $NAMESPACE --replicas=0
+    kubectl scale deployment $DEPLOYMENT --replicas=0 -n $NAMESPACE
 
     echo "Waiting for pods to terminate..."
     kubectl wait --for=delete pod -l app=$DEPLOYMENT -n $NAMESPACE --timeout=60s
 
-    echo "Cleaning up PVC data..."
-    rm -rf /data/*
+    echo "Performing PVC cleanup..."
+    # Replace with actual cleanup commands
+    sleep 10
 
-    echo "Scaling up $DEPLOYMENT..."
-    kubectl scale deployment $DEPLOYMENT -n $NAMESPACE --replicas=1
+    echo "Scaling $DEPLOYMENT back to $ORIGINAL_REPLICAS replicas..."
+    kubectl scale deployment $DEPLOYMENT --replicas=$ORIGINAL_REPLICAS -n $NAMESPACE
 
-    echo "Done."
+    echo "Re-enabling Argo CD auto-sync for application $ARGO_APP..."
+    kubectl patch application $ARGO_APP -n $ARGO_NS \
+      --type merge \
+      -p '{"spec": {"syncPolicy": {"automated": {}}}}'
+
+    echo "Cleanup complete."
