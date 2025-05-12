@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup-job
+  namespace: otel
+spec:
+  backoffLimit: 1
+  schedule: "@never"
+  template:
+    spec:
+      serviceAccountName: cleanup-job-sa
+      restartPolicy: Never
+      containers:
+        - name: cleanup
+          image: bitnami/kubectl:latest
+          command: ["/bin/bash", "/scripts/cleanup.sh"]
+          volumeMounts:
+            - name: script-volume
+              mountPath: /scripts
+      volumes:
+        - name: script-volume
+          configMap:
+            name: cleanup-script
+            defaultMode: 0777
