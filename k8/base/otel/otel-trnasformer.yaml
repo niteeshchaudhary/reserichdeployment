@@ -39,7 +39,8 @@ spec:
           command:
             - sh
             - -c
-            - > echo "EOF"
+            - > 
+              echo "EOF"
           args:
             - "--config=/etc/otel-collector-config/config.yaml"
           ports:
