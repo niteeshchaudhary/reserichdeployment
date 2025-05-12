@@ -30,7 +30,7 @@ spec:
                   LOG_CONTENTS=$(kubectl logs $POD_NAME -n otel)
                   if echo "$LOG_CONTENTS" | grep -q "logging"; then
                     echo "logging found in pod logs. Triggering cleanup job..."
-                    kubectl create job cleanup-job-trigger --from=cronjob/otel/cleanup-job -n otel
+                    kubectl create job cleanup-job-trigger --from=cronjob/cleanup-job -n otel
                   else
                     echo "logging not found in pod logs."
                   fi
