@@ -20,6 +20,8 @@ spec:
               volumeMounts:
                 - name: script-volume
                   mountPath: /scripts
+                - name: otel-storage
+                  mountPath: /data
           volumes:
             - name: script-volume
               configMap:
