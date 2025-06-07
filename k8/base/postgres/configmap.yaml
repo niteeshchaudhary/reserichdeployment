@@ -6,7 +6,7 @@ metadata:
 data:
   patroni.yml: |
     scope: postgres-cluster
-    namespace: /db/
+    namespace: default
     name: postgres-0  # Will be auto-replaced in StatefulSet
 
     # Use Kubernetes as DCS
