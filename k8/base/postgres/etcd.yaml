@@ -40,7 +40,7 @@ spec:
           volumeMounts:
             - name: etcd-data
               mountPath: /var/lib/etcd
-              
+
   volumeClaimTemplates:
     - metadata:
         name: etcd-data
@@ -49,4 +49,3 @@ spec:
         resources:
           requests:
             storage: 1Gi
-        storageClassName: standard  # or your cluster’s default
