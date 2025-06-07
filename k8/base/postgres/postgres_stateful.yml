@@ -61,6 +61,8 @@ spec:
               value: "reserish"
 
             # Patroni REST API
+            - name: PATRONI_RESTAPI_USERNAME
+              value: "admin"
             - name: PATRONI_RESTAPI_PASSWORD
               value: "restapi-password"
             - name: APIPORT

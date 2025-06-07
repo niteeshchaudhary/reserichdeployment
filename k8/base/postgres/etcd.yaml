@@ -9,7 +9,6 @@ spec:
     matchLabels:
       app: etcd
   template:
-  
     metadata:
       labels:
         app: etcd
@@ -17,31 +16,53 @@ spec:
       serviceAccountName: patroni
       containers:
         - name: etcd
-          image: k8sre/etcd:v3.5.7 # Updated to new etcd image
+          image: k8sre/etcd:v3.5.7
           env:
             - name: POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           command:
-            - /usr/local/bin/etcd
-            - --name=$(POD_NAME)
-            - --initial-advertise-peer-urls=http://$(POD_NAME).etcd.default.svc.cluster.local:2380
-            - --listen-peer-urls=http://0.0.0.0:2380
-            - --listen-client-urls=http://0.0.0.0:2379
-            - --advertise-client-urls=http://$(POD_NAME).etcd.default.svc.cluster.local:2379
-            - --initial-cluster-token=etcd-cluster-1
-            - --initial-cluster=$(POD_NAME)=http://$(POD_NAME).etcd.default.svc.cluster.local:2380
-            - --initial-cluster-state=new
-            - --enable-v2=true
+            - /bin/sh
+            - -ec
+            - |
+              HOSTNAME=$(hostname -s)
+              INITIAL_CLUSTER="etcd-0=http://etcd-0.etcd.${NAMESPACE}.svc.cluster.local:2380,etcd-1=http://etcd-1.etcd.${NAMESPACE}.svc.cluster.local:2380,etcd-2=http://etcd-2.etcd.${NAMESPACE}.svc.cluster.local:2380"
+              exec /usr/local/bin/etcd \
+                --name=${HOSTNAME} \
+                --initial-advertise-peer-urls=http://${HOSTNAME}.etcd.${NAMESPACE}.svc.cluster.local:2380 \
+                --listen-peer-urls=http://0.0.0.0:2380 \
+                --listen-client-urls=http://0.0.0.0:2379 \
+                --advertise-client-urls=http://${HOSTNAME}.etcd.${NAMESPACE}.svc.cluster.local:2379 \
+                --initial-cluster-token=etcd-cluster-1 \
+                --initial-cluster=${INITIAL_CLUSTER} \
+                --initial-cluster-state=new \
+                --enable-v2=true
           ports:
             - containerPort: 2380
+              name: peer
             - containerPort: 2379
+              name: client
           volumeMounts:
             - name: etcd-data
               mountPath: /var/lib/etcd
-      volumes:
-        - name: etcd-data
-          emptyDir: {}  # Use emptyDir for ephemeral storage; consider persistent storage for production
-
-    
+          livenessProbe:
+            exec:
+              command:
+                - /usr/local/bin/etcdctl
+                - endpoint
+                - health
+            initialDelaySeconds: 10
+            periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: etcd-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi

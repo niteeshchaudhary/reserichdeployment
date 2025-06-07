@@ -42,7 +42,7 @@ data:
       authentication:
         admin:
           username: admin
-          password: cola  # Admin password
+          password: restapi-password  # Admin password
     
     # Additional settings
     ttl: 30
