@@ -37,3 +37,11 @@ spec:
           ports:
             - containerPort: 2380
             - containerPort: 2379
+          volumeMounts:
+            - name: etcd-data
+              mountPath: /var/lib/etcd
+      volumes:
+        - name: etcd-data
+          emptyDir: {}  # Use emptyDir for ephemeral storage; consider persistent storage for production
+
+    
