@@ -37,3 +37,16 @@ spec:
           ports:
             - containerPort: 2380
             - containerPort: 2379
+          volumeMounts:
+            - name: etcd-data
+              mountPath: /var/lib/etcd
+              
+  volumeClaimTemplates:
+    - metadata:
+        name: etcd-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: standard  # or your cluster’s default
