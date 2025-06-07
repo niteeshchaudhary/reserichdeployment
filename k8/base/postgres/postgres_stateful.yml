@@ -31,6 +31,8 @@ spec:
               value: "role"
             - name: KUBERNETES_SCOPE_LABEL
               value: "cluster-name"
+            - name: PATRONI_KUBERNETES_SCOPE_LABEL
+              value: "cluster-name"
             - name: KUBERNETES_LABELS
               value: '{"app": "postgres"}'
             - name: SCOPE
@@ -45,6 +47,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            - name: PATRONI_LOG_LEVEL
+              value: DEBUG
 
             # PostgreSQL superuser credentials
             - name: PGUSER_SUPERUSER
