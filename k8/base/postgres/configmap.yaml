@@ -6,7 +6,6 @@ metadata:
 data:
   patroni.yml: |
     scope: postgres-cluster
-    namespace: /db/
     name: postgres-0
 
     kubernetes:
