@@ -7,13 +7,11 @@ data:
   patroni.yml: |
     scope: postgres-cluster
     namespace: /db/
-    name: postgres-0  # Will be auto-replaced in StatefulSet
+    name: postgres-0
 
-    # Use Kubernetes as DCS
     kubernetes:
       labels:
         app: postgres
-      pod_ip: {{ pod_ip }}
       ports:
         postgresql: 5432
         api: 8008
@@ -21,26 +19,16 @@ data:
       role_label: role
       use_endpoints: true
 
-    # PostgreSQL settings
     postgresql:
       listen: 0.0.0.0:5432
-      connect_address: {{ pod_ip }}:5432
       data_dir: /home/postgres/pgdata
       parameters:
         ssl: "off"
       use_pg_rewind: true
       unix_socket_directories: /var/run/postgresql
-      authentication:
-        replication:
-          username: standby
-          password: standbypassword
-        superuser:
-          username: postgres
-          password: {{ superuser_password }}
 
     restapi:
       listen: 0.0.0.0:8008
-      connect_address: {{ pod_ip }}:8008
       authentication:
         admin:
           username: admin
