@@ -6,13 +6,13 @@ metadata:
 data:
   patroni.yml: |
     scope: postgres-cluster
-    namespace: default
+    namespace: /db/
     name: postgres-0  # Will be auto-replaced in StatefulSet
 
     # Use Kubernetes as DCS
     kubernetes:
       labels:
-        app: patroni
+        app: postgres
       pod_ip: {{ pod_ip }}
       ports:
         postgresql: 5432
