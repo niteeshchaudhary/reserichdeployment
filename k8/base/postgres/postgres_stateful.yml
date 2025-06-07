@@ -29,10 +29,14 @@ spec:
               value: "true"
             - name: KUBERNETES_ROLE_LABEL
               value: "role"
+            - name: PATRONI_KUBERNETES_ROLE_LABEL
+              value: "role"
             - name: KUBERNETES_SCOPE_LABEL
               value: "cluster-name"
             - name: PATRONI_KUBERNETES_SCOPE_LABEL
               value: "cluster-name"
+            - name: PATRONI_KUBERNETES_LABELS
+              value: '{"app": "postgres"}'
             - name: KUBERNETES_LABELS
               value: '{"app": "postgres"}'
             - name: SCOPE
