@@ -7,8 +7,9 @@ data:
   patroni.yml: |
     scope: postgres-cluster
     namespace: /db/
-    name: postgres-0  # Pod name (will be updated automatically)
-    
+    name: postgres-0  # Will be auto-replaced in StatefulSet
+
+    # Use Kubernetes as DCS
     kubernetes:
       labels:
         app: patroni
@@ -20,16 +21,7 @@ data:
       role_label: role
       use_endpoints: true
 
-    # ETCD Configuration
-    etcd:
-      host: etcd-0.etcd.default.svc.cluster.local:2379,etcd-1.etcd.default.svc.cluster.local:2379,etcd-2.etcd.default.svc.cluster.local:2379
-      # Ensure SSL is disabled
-      ssl:
-        enabled: false
-
-
-
-    # PostgreSQL Settings
+    # PostgreSQL settings
     postgresql:
       listen: 0.0.0.0:5432
       connect_address: {{ pod_ip }}:5432
@@ -41,22 +33,20 @@ data:
       authentication:
         replication:
           username: standby
-          password: standbypassword  # Specify a replication password
+          password: standbypassword
         superuser:
           username: postgres
-          password: {{ superuser_password }}  # Use a templated value (will be replaced in your StatefulSet)
-    
-    # Patroni settings
+          password: {{ superuser_password }}
+
     restapi:
       listen: 0.0.0.0:8008
       connect_address: {{ pod_ip }}:8008
       authentication:
         admin:
           username: admin
-          password: cola  # Admin password
-    
-    # Additional settings
+          password: cola
+
     ttl: 30
     loop_wait: 10
-    maximum_lag_on_failover: 1048576  # Adjust according to your needs
+    maximum_lag_on_failover: 1048576
     retry_timeout: 10

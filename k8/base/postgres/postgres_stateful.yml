@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
+  namespace: default
 spec:
   serviceName: "db"
   replicas: 3
@@ -12,33 +13,38 @@ spec:
     metadata:
       labels:
         app: postgres
-        cluster-name: postgres-cluster
+        cluster-name: postgres-cluster   # must match KUBERNETES_SCOPE_LABEL
     spec:
-      serviceAccountName: patroni  # Use the ServiceAccount created above
+      serviceAccountName: patroni
       containers:
         - name: patroni
           image: flant/spilo:latest
           ports:
             - containerPort: 5432
+              name: postgresql
             - containerPort: 8008
+              name: patroni-restapi
           env:
             - name: DCS_ENABLE_KUBERNETES_API
               value: "true"
             - name: KUBERNETES_ROLE_LABEL
-              value: "role"  # You can customize this
+              value: "role"
             - name: KUBERNETES_SCOPE_LABEL
-              value: "cluster-name"  # Required for service selectors
+              value: "cluster-name"
             - name: KUBERNETES_LABELS
-              value: '{"application": "spilo"}'  # Optional; default is fine
-            # Cluster identity
+              value: '{"app": "postgres"}'
             - name: SCOPE
-              value: "postgres-cluster"  # Same as PATRONI_SCOPE
+              value: "postgres-cluster"
             - name: PATRONI_SCOPE
               value: "postgres-cluster"
             - name: POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
 
             # PostgreSQL superuser credentials
             - name: PGUSER_SUPERUSER
@@ -60,15 +66,13 @@ spec:
             - name: PATRONI_POSTGRESQL_DATABASE
               value: "reserish"
 
-            # Patroni REST API
+            # Patroni REST API credentials
             - name: PATRONI_RESTAPI_PASSWORD
               value: "restapi-password"
             - name: APIPORT
               value: "8008"
             - name: RESTAPI_CONNECT_ADDRESS
               value: "$(POD_NAME).postgres.default.svc.cluster.local:8008"
-            - name: ETCD_HOSTS
-              value: '"etcd-0.etcd.default.svc.cluster.local:2379","etcd-1.etcd.default.svc.cluster.local:2379","etcd-2.etcd.default.svc.cluster.local:2379"'
 
             - name: PATRONI_SSL_MODE
               value: "disable"
@@ -76,6 +80,7 @@ spec:
           volumeMounts:
             - name: pgdata
               mountPath: /home/postgres/pgdata
+
   volumeClaimTemplates:
     - metadata:
         name: pgdata
