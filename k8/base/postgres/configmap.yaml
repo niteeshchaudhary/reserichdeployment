@@ -9,6 +9,17 @@ data:
     namespace: /db/
     name: postgres-0  # Pod name (will be updated automatically)
     
+    kubernetes:
+      labels:
+        app: patroni
+      pod_ip: {{ pod_ip }}
+      ports:
+        postgresql: 5432
+        api: 8008
+      scope_label: patroni-cluster
+      role_label: role
+      use_endpoints: true
+
     # ETCD Configuration
     etcd:
       host: etcd-0.etcd.default.svc.cluster.local:2379,etcd-1.etcd.default.svc.cluster.local:2379,etcd-2.etcd.default.svc.cluster.local:2379
